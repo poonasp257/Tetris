@@ -11,8 +11,11 @@ public class BlockManager : MonoBehaviour {
 
 	[SerializeField] private GameObject bgTilePrefab;
 	[SerializeField] private GameObject[] tetrominoPrefabs;  
-	[SerializeField] private int Width = 10;
-	[SerializeField] private int Height = 20;
+	[SerializeField] private int width = 10;
+	[SerializeField] private int height = 20;
+
+	public int Width { get { return width; } }
+	public int Height { get { return height; } }
 
 	private void Start() {
 		grid = new bool[Width, Height];
@@ -67,10 +70,10 @@ public class BlockManager : MonoBehaviour {
 		tetrominoQueue.Enqueue(newTetromino);
 	}
 
-	private GameObject PullTetrominoQueue() {
-		for(int i = 0; i < tetrominoQueue.Count; ++i) {
+	//private GameObject PullTetrominoQueue() {
+	//	for(int i = 0; i < tetrominoQueue.Count; ++i) {
 			
 			
-		}
-	}
+	//	}
+	//}
 }

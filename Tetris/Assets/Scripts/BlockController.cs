@@ -3,17 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BlockController : MonoBehaviour {
-	private GameObject childBlocks;
+	private GameObject blockManager;
+	private GameObject[] childBlocks;
+	private Vector3 pivot;
 
 	private bool isFalling = true;
 	private float fallCycle = 1.0f;
 
 	private void Start() {
-		StartCoroutine("FallCycle");
+		Initialize();
+
+		//StartCoroutine("FallCycle");
 	}
 
 	private void Update() {
 		ProcessInput();
+	}
+
+	private void Initialize() {
+		blockManager = GameObject.Find("Block Manager");
+		childBlocks = new GameObject[transform.childCount];
+
+		for(int i = 0; i < transform.childCount; ++i) {
+			childBlocks[i] = transform.GetChild(i).gameObject;
+		}
+		
+		pivot = Vector3.zero;
+
+		foreach (GameObject child in childBlocks) {
+			pivot += child.transform.position;
+		}
+
+		pivot /= transform.childCount;
 	}
 
 	private void ProcessInput() {
@@ -38,7 +59,8 @@ public class BlockController : MonoBehaviour {
 	}
 
 	private void RotateBlock() {
-		transform.Rotate(0, 0, -90);
+		transform.Rotate(0, 0, -90, Space.Self);
+		//transform.RotateAround(pivot, Vector3.forward, -90f);
 	}
 
 	private void DropBlock() {

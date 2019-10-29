@@ -305,7 +305,7 @@ GameObject:
   - component: {fileID: 1676404171}
   - component: {fileID: 1676404170}
   m_Layer: 0
-  m_Name: Grid
+  m_Name: Block Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -333,8 +333,8 @@ MonoBehaviour:
   - {fileID: 649149413068183615, guid: fcd50c9d1622bfa4e8fec23d59a660fa, type: 3}
   - {fileID: 7786719354556680031, guid: 49df376253cf26b4fb62c82eccb1be4d, type: 3}
   - {fileID: 2537190668972111699, guid: 009ad9b501a935d44a9f080bffafc7cf, type: 3}
-  Width: 10
-  Height: 20
+  width: 10
+  height: 20
 --- !u!4 &1676404171
 Transform:
   m_ObjectHideFlags: 0
