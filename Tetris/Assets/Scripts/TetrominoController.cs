@@ -5,8 +5,7 @@ using UnityEngine;
 public class TetrominoController : MonoBehaviour {
 	private TetrominoManager tetrominoManager;
 	private List<Transform> childBlocks;
-
-	private bool isFalling;
+	
 	private float fallCycle;
 
 	private void Start() {
@@ -22,9 +21,8 @@ public class TetrominoController : MonoBehaviour {
 	private void Initialize() {
 		tetrominoManager = GameObject.Find("Tetromino Manager").GetComponent<TetrominoManager>();
 		childBlocks = new List<Transform>();
-
-		isFalling = true;
-		fallCycle = 1.0f;
+		
+		fallCycle = 0.5f;
 
 		for (int i = 0; i < transform.childCount; ++i) {
 			childBlocks.Add(transform.GetChild(i));
@@ -74,33 +72,33 @@ public class TetrominoController : MonoBehaviour {
 	}
 
 	private void DropTetromino() {
-		isFalling = false;
+		while (true) {
+			Vector3 originPosition = transform.position;
 
-		while (CheckTetromino()) {
-			transform.position += Vector3.down;
-		}
-
-		foreach (Transform block in childBlocks) {
-			tetrominoManager.InsertBlock(block.gameObject);
-		}
-		tetrominoManager.currentTetromino = null;
-	}
-
-	IEnumerator FallCycle() {
-		while (isFalling) {
 			transform.position += Vector3.down;
 
 			if(!CheckTetromino()) {
-				isFalling = false;
+				transform.position = originPosition;
+				break;
+			}
+		}
+	}
 
+	IEnumerator FallCycle() {
+		while(true) {
+			Vector3 originPosition = transform.position;
+
+			transform.position += Vector3.down;
+			if (!CheckTetromino()) {
+				transform.position = originPosition;
 				foreach (Transform block in childBlocks) {
 					tetrominoManager.InsertBlock(block.gameObject);
 				}
+				Destroy(this.gameObject);
+				break;
 			}
 
 			yield return new WaitForSeconds(fallCycle);
 		}
-
-
 	}
 }

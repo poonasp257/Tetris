@@ -9,7 +9,10 @@ public class TetrominoManager : MonoBehaviour {
 
 	private Transform mapNode;
 	private GameObject[,] blockMap;
-	
+
+	public int Score { get; private set; }
+	public int Combo { get; private set; }
+
 	private void Start() {
 		Initilaize();
 	}
@@ -17,13 +20,16 @@ public class TetrominoManager : MonoBehaviour {
 	private void Update() {
 		if (!currentTetromino) {			
 			currentTetromino = tetrominoQueue.Dequeue();
-			currentTetromino.transform.position = new Vector3(-1, -2 + grid.HalfHeight);
 			currentTetromino.transform.SetParent(this.transform);
+			currentTetromino.transform.position = new Vector3(-1.0f, -2 + grid.HalfHeight, 0);
+
 			var controller = currentTetromino.GetComponent<TetrominoController>();
 			if (!controller) {
 				currentTetromino.AddComponent<TetrominoController>();
 			}
 		}
+
+		CheckMap();
 	}
 
 	private void Initilaize() {
@@ -32,6 +38,43 @@ public class TetrominoManager : MonoBehaviour {
 		mapNode = GameObject.Find("Map").transform;
 
 		blockMap = new GameObject[grid.Width, grid.Height];
+
+		Score = 0;
+		Combo = 0;
+	}
+
+	private void DeleteLine(int row) {
+		for (int col = 0; col < blockMap.GetLength(0); ++col) {
+			Destroy(blockMap[col, row]);
+			blockMap[col, row] = null;
+		}
+	}
+
+	private void PullLine(int deletedLine) {
+		for (int row = deletedLine; row < blockMap.GetLength(1) - 1; ++row) { 
+			for (int col = 0; col < blockMap.GetLength(0); ++col) {
+				if (blockMap[col, row + 1] == null) continue;
+
+				blockMap[col, row] = blockMap[col, row + 1];
+				blockMap[col, row + 1] = null;
+				blockMap[col, row].transform.position += Vector3.down;
+			}
+		}
+	}
+	
+	private void CheckMap() {
+		for (int row = 0; row < blockMap.GetLength(1); ++row) {
+			int count = 0;
+			for (int col = 0; col < blockMap.GetLength(0); ++col) {
+				if (blockMap[col, row] != null) ++count;
+			}
+
+			if (count == grid.Width) {
+				DeleteLine(row);
+				PullLine(row);
+				Score += 100;// * Combo;
+			}
+		}
 	}
 
 	public void InsertBlock(GameObject block) {
@@ -39,12 +82,12 @@ public class TetrominoManager : MonoBehaviour {
 		int y = Mathf.RoundToInt(block.transform.position.y);
 
 		blockMap[x + grid.HalfWidth, y + grid.HalfHeight] = block;
-		//block.transform.SetParent(mapNode);
+		block.transform.SetParent(mapNode);
 	}
 
 	public bool IsOutOfGrid(int x, int y) {
 		if ((x < -grid.HalfWidth || x >= grid.HalfWidth)
-			|| (y <= -grid.HalfHeight || y > grid.HalfHeight)) return true;
+			|| (y < -grid.HalfHeight || y > grid.HalfHeight)) return true;
 
 		return false;
 	}
