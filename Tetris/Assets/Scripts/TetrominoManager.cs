@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TetrominoManager : MonoBehaviour {
 	private Grid grid;
@@ -10,6 +11,8 @@ public class TetrominoManager : MonoBehaviour {
 	private Vector2 spawnPoint; 		
 	private GameObject currentTetromino;
 	private TetrominoController tetrominoController;
+	private GameObject ghostTetromino;
+	private TetrominoController ghostController;
 
 	private float fallCycle;
 	private float defaultFallCycle;
@@ -27,16 +30,23 @@ public class TetrominoManager : MonoBehaviour {
 
 	private void Update() {
 		IsGameOver = canSpawnTetromino();
-		if (IsGameOver) return;
+		if (IsGameOver) {
+			SceneManager.LoadScene("Game Over");
+		}
 
 		if (!currentTetromino) setupTetromino();
 		else {
+			ghostTetromino.transform.SetPositionAndRotation(
+				currentTetromino.transform.position, currentTetromino.transform.rotation);
+			ghostController.dropTetromino();
+
 			if (!tetrominoController.canMoveTo(Vector3.down)) {
 				blockMap.insertTetromino(currentTetromino);
 				Destroy(currentTetromino);
 				currentTetromino = null;
+				Destroy(ghostTetromino);
+				ghostTetromino = null;
 			}
-
 		}
 
 		if(Input.GetKeyDown(KeyCode.DownArrow)) {
@@ -58,6 +68,7 @@ public class TetrominoManager : MonoBehaviour {
 
 		spawnPoint = new Vector2(-1, -2 + grid.HalfHeight);
 		currentTetromino = null;
+		ghostTetromino = null;
 
 		defaultFallCycle = 1.0f;
 		fallCycle = defaultFallCycle;
@@ -74,22 +85,42 @@ public class TetrominoManager : MonoBehaviour {
 		return blockMap.findBlock(x, y);
 	}
 
-	private void setupTetromino() {
+	private void SettingCurrentTetromino() {
 		currentTetromino = tetrominoQueue.dequeue();
 		currentTetromino.transform.SetParent(this.transform);
 		currentTetromino.transform.position = spawnPoint;
-		
+
 		tetrominoController = currentTetromino.GetComponent<TetrominoController>();
 		if (!tetrominoController) {
 			tetrominoController = currentTetromino.AddComponent<TetrominoController>();
 		}
 	}
 
+	private void SettingGhostTetromino() {
+		ghostTetromino = Instantiate(currentTetromino, this.transform);
+		ghostController = ghostTetromino.GetComponent<TetrominoController>();
+		var renderers = ghostTetromino.GetComponentsInChildren<Renderer>();
+		foreach (var renderer in renderers) {
+			Color color = renderer.material.color;
+			color.a = 0.5f;
+			renderer.material.color = color;
+		}
+	}
+
+	private void setupTetromino() {
+		SettingCurrentTetromino();
+		SettingGhostTetromino();		
+	}
+
 	private void NextLevel() {
-		blockMap.DeleteAllBlock(); 
+		Score = 0;
+		Combo = 0;
 		++Level;
+
 		defaultFallCycle -= 0.2f * Level;
 		fallCycle = defaultFallCycle;
+
+		blockMap.DeleteAllBlock();
 	}
 	
 	public void plusScore() {
