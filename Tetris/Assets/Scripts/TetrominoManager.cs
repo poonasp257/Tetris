@@ -29,7 +29,6 @@ public class TetrominoManager : MonoBehaviour {
 			}
 		}
 
-		CheckMap();
 	}
 
 	private void Initilaize() {
@@ -62,7 +61,8 @@ public class TetrominoManager : MonoBehaviour {
 		}
 	}
 	
-	private void CheckMap() {
+	public void CheckMap() {
+		bool success = false;
 		for (int row = 0; row < blockMap.GetLength(1); ++row) {
 			int count = 0;
 			for (int col = 0; col < blockMap.GetLength(0); ++col) {
@@ -72,9 +72,15 @@ public class TetrominoManager : MonoBehaviour {
 			if (count == grid.Width) {
 				DeleteLine(row);
 				PullLine(row);
-				Score += 100;// * Combo;
+				--row;
+				if (!success) {
+					success = true;
+					++Combo;
+				}
+				Score += 100 * Combo;
 			}
 		}
+		if (!success) Combo = 0;
 	}
 
 	public void InsertBlock(GameObject block) {

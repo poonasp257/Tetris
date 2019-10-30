@@ -1,7 +1,31 @@
 fileFormatVersion: 2
-guid: 6ae88eb29b5ce324695cce173bbb23e8
+guid: a043b85e0cc3ff24f96364671cbf2d65
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -1259976938152978778
+    second: Block
+  - first:
+      213: -6694234558496575664
+    second: joinedblocks-256x128_1
+  - first:
+      213: -4312512423019167115
+    second: joinedblocks-256x128_2
+  - first:
+      213: -4198404518510104858
+    second: joinedblocks-256x128_3
+  - first:
+      213: 7974836873543061531
+    second: joinedblocks-256x128_4
+  - first:
+      213: 2302218754295717743
+    second: joinedblocks-256x128_5
+  - first:
+      213: -6574352985104149429
+    second: joinedblocks-256x128_6
+  - first:
+      213: 1907885369804963801
+    second: joinedblocks-256x128_7
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -40,7 +64,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -84,7 +108,28 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Block
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 911eda0446a7df049a1f16116cb4b3f8
+      internalID: -1259976938152978778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []

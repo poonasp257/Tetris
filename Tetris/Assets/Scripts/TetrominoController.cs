@@ -95,6 +95,7 @@ public class TetrominoController : MonoBehaviour {
 					tetrominoManager.InsertBlock(block.gameObject);
 				}
 				Destroy(this.gameObject);
+				tetrominoManager.CheckMap();
 				break;
 			}
 

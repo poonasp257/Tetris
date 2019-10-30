@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9039200313412834956}
   - component: {fileID: 1700310684765111536}
   m_Layer: 0
-  m_Name: Background Tile
+  m_Name: Grid Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,12 +69,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 6ae88eb29b5ce324695cce173bbb23e8, type: 3}
+  m_Sprite: {fileID: -1259976938152978778, guid: a043b85e0cc3ff24f96364671cbf2d65,
+    type: 3}
   m_Color: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.64, y: 0.64}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
