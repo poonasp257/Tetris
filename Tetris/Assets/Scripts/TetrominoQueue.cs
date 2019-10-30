@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TetrominoQueue : MonoBehaviour {
-	private Grid grid;
 	private Queue<GameObject> tetrominoQueue;
 	private GameObject nextTetromino;
 
-	[SerializeField] private GameObject[] tetrominoPrefabs = new GameObject[7];
+	[SerializeField] private GameObject[] tetrominoPrefabs;
 	
 	private void Start() {
-		grid = GameObject.Find("Grid").GetComponent<Grid>();
 		tetrominoQueue = new Queue<GameObject>();
 	}
 
 	private void Update() {
-		if (tetrominoPrefabs.Length <= 0 || !grid) return;
+		if (tetrominoPrefabs.Length <= 0) return;
 
 		if (tetrominoQueue.Count < 4) {
-			GameObject newTetromino = CreateTetromino();
-			Enqueue(newTetromino);
+			enqueue(createTetromino());
 		}
 
 		if(!nextTetromino) {
@@ -28,20 +25,20 @@ public class TetrominoQueue : MonoBehaviour {
 		}
 	}
 
-	private GameObject CreateTetromino() {
+	private GameObject createTetromino() {
 		int randIndex = Random.Range(0, tetrominoPrefabs.Length);
 		GameObject tetromino = Instantiate(tetrominoPrefabs[randIndex], this.transform);		
-		
+
 		tetromino.SetActive(false);
 
 		return tetromino;
 	}
 		 
-	private void Enqueue(GameObject tetromino) {
+	private void enqueue(GameObject tetromino) {
 		tetrominoQueue.Enqueue(tetromino);
 	}
 
-	public GameObject Dequeue() {
+	public GameObject dequeue() {
 		if (tetrominoQueue.Count <= 0) return null;
 
 		nextTetromino = null;

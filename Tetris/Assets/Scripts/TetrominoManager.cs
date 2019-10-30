@@ -5,104 +5,106 @@ using UnityEngine;
 public class TetrominoManager : MonoBehaviour {
 	private Grid grid;
 	private TetrominoQueue tetrominoQueue;
-	public GameObject currentTetromino;
+	private BlockMap blockMap;
 
-	private Transform mapNode;
-	private GameObject[,] blockMap;
+	private Vector2 spawnPoint; 		
+	private GameObject currentTetromino;
+	private TetrominoController tetrominoController;
 
+	private float fallCycle;
+	private float defaultFallCycle;
+
+	public bool IsGameOver { get; private set; }
+	public int Level { get; private set; }
 	public int Score { get; private set; }
-	public int Combo { get; private set; }
-
+	public int Combo { get; set; }
+	   
 	private void Start() {
-		Initilaize();
+		initilaize();
+
+		StartCoroutine("FallCycle");
 	}
 
 	private void Update() {
-		if (!currentTetromino) {			
-			currentTetromino = tetrominoQueue.Dequeue();
-			currentTetromino.transform.SetParent(this.transform);
-			currentTetromino.transform.position = new Vector3(-1.0f, -2 + grid.HalfHeight, 0);
+		IsGameOver = canSpawnTetromino();
+		if (IsGameOver) return;
 
-			var controller = currentTetromino.GetComponent<TetrominoController>();
-			if (!controller) {
-				currentTetromino.AddComponent<TetrominoController>();
+		if (!currentTetromino) setupTetromino();
+		else {
+			if (!tetrominoController.canMoveTo(Vector3.down)) {
+				blockMap.insertTetromino(currentTetromino);
+				Destroy(currentTetromino);
+				currentTetromino = null;
 			}
+
 		}
 
+		if(Input.GetKeyDown(KeyCode.DownArrow)) {
+			fallCycle *= 0.1f;
+		}
+		if(Input.GetKeyUp(KeyCode.DownArrow)) {
+			fallCycle = defaultFallCycle;
+		}
+
+		if (Score >= 1500 * Level) NextLevel();
 	}
 
-	private void Initilaize() {
-		grid = GameObject.Find("Grid").GetComponent<Grid>();
+	private void initilaize() {
+		grid = GameObject.Find("Map/Grid").GetComponent<Grid>();
 		tetrominoQueue = GameObject.Find("Next Tetromino").GetComponent<TetrominoQueue>();
-		mapNode = GameObject.Find("Map").transform;
+		blockMap = GameObject.Find("Map").GetComponent<BlockMap>();
 
-		blockMap = new GameObject[grid.Width, grid.Height];
+		IsGameOver = false;
 
+		spawnPoint = new Vector2(-1, -2 + grid.HalfHeight);
+		currentTetromino = null;
+
+		defaultFallCycle = 1.0f;
+		fallCycle = defaultFallCycle;
+
+		Level = 1;
 		Score = 0;
 		Combo = 0;
 	}
+	
+	private bool canSpawnTetromino() {
+		int x = Mathf.RoundToInt(spawnPoint.x);
+		int y = Mathf.RoundToInt(spawnPoint.y);
 
-	private void DeleteLine(int row) {
-		for (int col = 0; col < blockMap.GetLength(0); ++col) {
-			Destroy(blockMap[col, row]);
-			blockMap[col, row] = null;
+		return blockMap.findBlock(x, y);
+	}
+
+	private void setupTetromino() {
+		currentTetromino = tetrominoQueue.dequeue();
+		currentTetromino.transform.SetParent(this.transform);
+		currentTetromino.transform.position = spawnPoint;
+		
+		tetrominoController = currentTetromino.GetComponent<TetrominoController>();
+		if (!tetrominoController) {
+			tetrominoController = currentTetromino.AddComponent<TetrominoController>();
 		}
 	}
 
-	private void PullLine(int deletedLine) {
-		for (int row = deletedLine; row < blockMap.GetLength(1) - 1; ++row) { 
-			for (int col = 0; col < blockMap.GetLength(0); ++col) {
-				if (blockMap[col, row + 1] == null) continue;
-
-				blockMap[col, row] = blockMap[col, row + 1];
-				blockMap[col, row + 1] = null;
-				blockMap[col, row].transform.position += Vector3.down;
-			}
-		}
+	private void NextLevel() {
+		blockMap.DeleteAllBlock(); 
+		++Level;
+		defaultFallCycle -= 0.2f * Level;
+		fallCycle = defaultFallCycle;
 	}
 	
-	public void CheckMap() {
-		bool success = false;
-		for (int row = 0; row < blockMap.GetLength(1); ++row) {
-			int count = 0;
-			for (int col = 0; col < blockMap.GetLength(0); ++col) {
-				if (blockMap[col, row] != null) ++count;
-			}
+	public void plusScore() {
+		Score += 100 * Combo;
+	}
 
-			if (count == grid.Width) {
-				DeleteLine(row);
-				PullLine(row);
-				--row;
-				if (!success) {
-					success = true;
-					++Combo;
+	IEnumerator FallCycle() {
+		while (true) {
+			if (currentTetromino) { 
+				if (tetrominoController.canMoveTo(Vector3.down)) {
+					tetrominoController.move(Vector3.down);				
 				}
-				Score += 100 * Combo;
 			}
+
+			yield return new WaitForSeconds(fallCycle);
 		}
-		if (!success) Combo = 0;
-	}
-
-	public void InsertBlock(GameObject block) {
-		int x = Mathf.RoundToInt(block.transform.position.x);
-		int y = Mathf.RoundToInt(block.transform.position.y);
-
-		blockMap[x + grid.HalfWidth, y + grid.HalfHeight] = block;
-		block.transform.SetParent(mapNode);
-	}
-
-	public bool IsOutOfGrid(int x, int y) {
-		if ((x < -grid.HalfWidth || x >= grid.HalfWidth)
-			|| (y < -grid.HalfHeight || y > grid.HalfHeight)) return true;
-
-		return false;
-	}
-
-	public bool FindInBlockMap(int x, int y) {
-		if (blockMap[x + grid.HalfWidth, y + grid.HalfHeight] == null) {
-			return false;
-		}
-
-		return true;
 	}
 }

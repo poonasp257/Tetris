@@ -5,9 +5,11 @@ using UnityEngine;
 public class Grid : MonoBehaviour {
 	private GameObject[,] grid;
 
+	[Header("Size Setting")]
 	[SerializeField] private int width = 10;
 	[SerializeField] private int height = 20;
 
+	[Header("Tile Setting")]
 	[SerializeField] private GameObject tilePrefab;
 
 	public int Width { get { return width; } }
@@ -17,13 +19,10 @@ public class Grid : MonoBehaviour {
 
 	private void Start() {
 		grid = new GameObject[width, height];
-
-		CreateTiles();
+		if(tilePrefab) createTiles();
 	}
 
-	private void CreateTiles() {
-		if (!tilePrefab) return;
-
+	private void createTiles() {
 		for (int i = 0; i < width; ++i) {
 			for (int j = 0; j < height; ++j) {
 				var tile = Instantiate(tilePrefab, this.transform);
@@ -33,5 +32,4 @@ public class Grid : MonoBehaviour {
 			}
 		}
 	}
-
 }
